@@ -3,6 +3,8 @@ CoreS3 MCP Gateway
 让 Claude App 通过 MCP 控制 CoreS3 设备
 """
 
+import os
+API KEY = os.environ.get("CORES3_API_KEY","")
 import asyncio
 import json
 import uuid
