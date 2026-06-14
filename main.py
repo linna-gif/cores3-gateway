@@ -139,6 +139,18 @@ async def device_result(request):
     except:
         return JSONResponse({"status": "error"})
 
+async def device_push(request):
+    rid = request.path_params.get("rid", "")
+    data = request.path_params.get("data", "")
+    if rid:
+        parts = data.split("/")
+        result = {}
+        for i in range(0, len(parts) - 1, 2):
+            result[parts[i]] = parts[i + 1]
+        command_results[rid] = result
+        logger.info("Push result for {}: {}".format(rid, result))
+    return JSONResponse({"status": "ok"})
+
 
 async def index(request):
     is_online = (time.time() - device_status["last_seen"]) < 10
@@ -154,6 +166,7 @@ routes = [
     Route("/mcp", mcp_endpoint, methods=["GET", "POST"]),
     Route("/api/poll", device_poll),
     Route("/api/result", device_result, methods=["POST"]),
+    Route("/api/push/{data:path}",device_push),
 ]
 
 app = Starlette(routes=routes)
