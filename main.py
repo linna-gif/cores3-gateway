@@ -166,7 +166,7 @@ routes = [
     Route("/mcp", mcp_endpoint, methods=["GET", "POST"]),
     Route("/api/poll", device_poll),
     Route("/api/result", device_result, methods=["POST"]),
-    Route("/api/push/{data:path}",device_push),
+    Route("/api/push/{rid}/{data:path}",device_push),
 ]
 
 app = Starlette(routes=routes)
