@@ -1,2 +1,2 @@
-mcp[server]>=1.0.0
+starlette==0.41.0
 uvicorn==0.30.0
