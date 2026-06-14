@@ -54,7 +54,7 @@ async def execute_tool(name, args):
         return "CoreS3 offline, cannot execute"
 
     if name == "take_photo":
-        r = await wait_result(send_cmd("take_photo"), 10)
+        r = await wait_result(send_cmd("take_photo"), 30)
         return r.get("pd", r.get("error", "failed"))
     elif name == "set_expression":
         send_cmd("set_expression", {"expression": args.get("expression", "neutral")})
@@ -63,7 +63,7 @@ async def execute_tool(name, args):
         send_cmd("set_screen_text", {"text": args.get("text", "")})
         return "Text displayed"
     elif name == "get_touch":
-        r = await wait_result(send_cmd("get_touch"), 5)
+        r = await wait_result(send_cmd("get_touch"), 30)
         if "error" in r:
             return r["error"]
         if r.get("t") == "1":
