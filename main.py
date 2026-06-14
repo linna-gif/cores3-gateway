@@ -1,5 +1,5 @@
 """
-CoreS3 MCP Gateway v3
+CoreS3 MCP Gateway v4
 """
 
 import os
@@ -55,7 +55,7 @@ async def execute_tool(name, args):
 
     if name == "take_photo":
         r = await wait_result(send_cmd("take_photo"), 10)
-        return r.get("description", r.get("error", "failed"))
+        return r.get("pd", r.get("error", "failed"))
     elif name == "set_expression":
         send_cmd("set_expression", {"expression": args.get("expression", "neutral")})
         return "Showing {} expression".format(args.get("expression"))
@@ -64,8 +64,11 @@ async def execute_tool(name, args):
         return "Text displayed"
     elif name == "get_touch":
         r = await wait_result(send_cmd("get_touch"), 5)
-        if "error" in r: return r["error"]
-        return "Touched at x={}, y={}".format(r["x"], r["y"]) if r.get("touched") else "Not touched"
+        if "error" in r:
+            return r["error"]
+        if r.get("t") == "1":
+            return "Touched at x={}, y={}".format(r.get("tx", 0), r.get("ty", 0))
+        return "Not touched"
     return "Unknown tool"
 
 
@@ -112,14 +115,14 @@ async def device_poll(request):
     device_status["last_seen"] = time.time()
     device_status["ip"] = request.client.host if request.client else "unknown"
 
-    # Check if CoreS3 is sending a result with the poll
-    result_id = request.query_params.get("result_id", "")
-    result_data = request.query_params.get("result_data", "")
-    if result_id and result_data:
-        try:
-            command_results[result_id] = json.loads(result_data)
-        except:
-            pass
+    rid = request.query_params.get("rid", "")
+    if rid:
+        result = {}
+        for k, v in request.query_params.items():
+            if k != "rid":
+                result[k] = v
+        command_results[rid] = result
+        logger.info("Result for {}: {}".format(rid, result))
 
     if pending_commands:
         return JSONResponse(pending_commands.pop(0))
