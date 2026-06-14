@@ -57,11 +57,11 @@ async def execute_tool(name, args):
         r = await wait_result(send_cmd("take_photo"), 10)
         return r.get("description", r.get("error", "failed"))
     elif name == "set_expression":
-        r = await wait_result(send_cmd("set_expression", {"expression": args.get("expression", "neutral")}), 5)
-        return "Showing {} expression".format(args.get("expression")) if "error" not in r else r["error"]
+        send_cmd("set_expression", {"expression": args.get("expression", "neutral")})
+        return "Showing {} expression".format(args.get("expression"))
     elif name == "set_screen_text":
-        r = await wait_result(send_cmd("set_screen_text", {"text": args.get("text", "")}), 5)
-        return "Text displayed" if "error" not in r else r["error"]
+        send_cmd("set_screen_text", {"text": args.get("text", "")})
+        return "Text displayed"
     elif name == "get_touch":
         r = await wait_result(send_cmd("get_touch"), 5)
         if "error" in r: return r["error"]
